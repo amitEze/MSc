@@ -1,0 +1,49 @@
+# MovieLens Recommendation System - Dependencies
+# =============================================
+# Install with: pip install -r requirements.txt
+
+# Core Data Science
+numpy>=1.21.0
+pandas>=1.3.0
+scipy>=1.7.0
+
+# Machine Learning
+scikit-learn>=1.0.0
+
+# Configuration
+pyyaml>=6.0
+
+# Visualization
+matplotlib>=3.4.0
+seaborn>=0.11.0
+
+# Optional: Advanced Models (uncomment to install)
+# ------------------------------------------------
+
+# Matrix Factorization (ALS)
+# implicit>=0.6.0
+
+# Gradient Boosting with sample weights
+# catboost>=1.0.0
+
+# Alternative gradient boosting
+# xgboost>=1.6.0
+
+# Hybrid recommender (content + collaborative)
+# lightfm>=1.16
+
+# BERT embeddings for tags
+# sentence-transformers>=2.2.0
+# torch>=1.10.0
+
+# Optional: Jupyter for development
+# ---------------------------------
+# jupyter>=1.0.0
+# ipykernel>=6.0.0
+
+# Optional: Code Quality
+# ----------------------
+# black>=22.0.0
+# flake8>=4.0.0
+# mypy>=0.960
+# pytest>=7.0.0

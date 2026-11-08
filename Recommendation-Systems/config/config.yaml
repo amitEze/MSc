@@ -1,0 +1,110 @@
+# MovieLens Recommendation System Configuration
+# ============================================
+
+# Random seed for reproducibility
+seed: 42
+
+# Data paths (relative to project root)
+data:
+  data_dir: "data"
+  movies_file: "movies.csv"
+  tags_file: "tags.csv"
+  train_file: "train.csv"
+  submission_file: "ratings_submission.csv"
+  output_dir: "outputs"
+  
+  # Development/Testing mode - sample data for faster iterations
+  # Set sample_fraction to a value < 1.0 to use a subset of data
+  # Example: 0.1 = use 10% of data, 1.0 = use all data (default)
+  sample_fraction: 1.0
+  sample_seed: 42
+
+# Model persistence settings
+model_persistence:
+  enabled: true
+  models_dir: "outputs/models"
+  # Individual model filenames
+  filenames:
+    bias: "bias_model.pkl"
+    bias_genre: "bias_genre_model.pkl"
+    als: "als_model.pkl"
+    catboost: "catboost_model.pkl"
+    cold_start: "cold_start_model.pkl"
+  # Also save preprocessing artifacts
+  preprocessing_file: "preprocessing_artifacts.pkl"
+  cv_results_file: "cv_results.pkl"
+
+# Preprocessing settings
+preprocessing:
+  # TF-IDF settings for tags
+  tfidf:
+    max_features: 500
+    ngram_range: [1, 2]
+    min_df: 5
+    stop_words: "english"
+  
+  # BERT embeddings (optional)
+  bert:
+    enabled: false
+    model_name: "all-MiniLM-L6-v2"
+    batch_size: 256
+
+# Cross-validation settings
+validation:
+  n_splits: 5
+  shuffle: true
+  
+  # For faster development: reduce CV splits
+  # Set to 2 or 3 for quick testing, 5 for final evaluation
+  fast_mode: false  # If true, uses n_splits: 2
+
+# Model hyperparameters
+models:
+  # Bias model settings
+  bias:
+    damping_user: 25
+    damping_movie: 10
+  
+  # Genre adjustment settings
+  genre:
+    adjustment_factor: 0.1
+    damping: 5
+  
+  # ALS (Alternating Least Squares) settings
+  als:
+    n_factors: 100
+    regularization: 0.1
+    iterations: 15
+    alpha: 40
+  
+  # CatBoost settings
+  catboost:
+    iterations: 500
+    learning_rate: 0.1
+    depth: 6
+    early_stopping_rounds: 50
+    verbose: 100
+
+# Cold start settings
+cold_start:
+  n_similar: 20
+  min_ratings_for_simulation: 50
+  n_cold_movies_for_evaluation: 50
+
+# Ensemble settings
+ensemble:
+  optimization_trials: 100
+  stacking_alpha: 1.0
+
+# Logging settings
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  log_file: "outputs/pipeline.log"
+
+# Submission settings
+submission:
+  output_file: "submission.csv"
+  clip_min: 0.5
+  clip_max: 5.0
+  decimal_places: 4

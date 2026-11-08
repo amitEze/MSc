@@ -1,0 +1,31 @@
+# Ignore Jupyter notebooks
+notebook.ipynb
+Untitled-1.ipynb
+
+# Ignore data directory
+/data/
+
+# Ignore log files
+*.log
+
+# Ignore CSV files
+*.csv
+
+# Ignore processed data
+/data/processed/
+
+# Ignore Python cache and environment files
+__pycache__/
+*.py[cod]
+*.so
+.env
+.venv/
+env/
+venv/
+.Python
+*.pyo
+.mypy_cache/
+.pytest_cache/
+.ipynb_checkpoints/
+.DS_Store
+Thumbs.db

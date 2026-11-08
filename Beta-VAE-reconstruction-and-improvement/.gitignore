@@ -1,0 +1,12 @@
+data/
+download_dsprites.sh
+run_3dchairs_H_beta4_z10.sh
+run_3dchairs_H_beta4_z16.sh
+run_celeba_H_beta10_z10.sh
+run_celeba_H_beta10_z32.sh
+run_dsprites_B_gamma100_z10.sh
+__pycache__/dataset.cpython-36.pyc
+__pycache__/model.cpython-36.pyc
+__pycache__/solver.cpython-36.pyc
+__pycache__/utils.cpython-36.pyc
+

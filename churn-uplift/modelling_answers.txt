@@ -1,0 +1,30 @@
+Feature Selection
+- Approach: Use all non-ID, non-target, non-treatment columns selected by `FeaturePreprocessor` in `src/features/featurize.py`.
+    Numeric features are imputed (`median` by default) and optionally standardized.
+- Rationale: 
+  - Domain relevance: Features derive from app usage, claims, and relevant web visits (filtered by keywords), which are directly tied to engagement and churn risk. The pipeline preserves all signal-bearing columns while excluding labels and treatment.
+  - Data quality: datetime columns except signup_date are excluded to avoid leakage and inconsistent parsing.
+  - Predictive power: the two-model uplift approach learns separate churn propensities under treatment/control so broad feature coverage helps capture heterogeneous treatment effects.
+- Config-driven drops: Any noisy or low-value fields can be excluded via `features.drop_cols` in YAML. This keeps the selection reproducible.
+
+Model Evaluation
+- Metrics implementation: 
+  - AUC: ROC AUC of uplift scores vs. churn label; sanity check for ranking quality when class balance permits.
+  - ATE: Average Treatment Effect estimated as `control_mean - treated_mean` on observed outcomes, ensuring treatment direction aligns with churn reduction.
+  - Fraction selection (uplift@k): Evaluate candidate outreach fractions (default 5% to 50%), pick the fraction with maximum estimated uplift (`p_control - p_treat`) in the top-k segment where both groups exist. Report `gain = uplift_hat * n`.
+- Validation/test protocol: `run_uplift_two_model.py` selects `fraction_k` on validation, then applies that fraction on test and writes `test_metrics.txt`, `test_scores.csv`, plus plots via `evaluate_uplift`.
+
+Using Outreach Data in Modelling
+- I tested several two-model uplift setups using both logistic regression and XGBoost. XGBoost was more accurate and robust, so I chose it as the base model.
+- Treatment indicator: The outreach event is represented as `t_outreach` (config `data.treatment_col`). The pipeline builds matrices with `y_churn` and `t_outreach` and trains the two-model uplift estimator.
+- Two-model design: `UpliftTwoModel` (`src/models/uplift_two_model.py`) fits separate classifiers for treated and control subsets, producing `p_churn_control`, `p_churn_treated`, and `uplift = p0 - p1`.
+- Influence on approach/results:
+  - Fraction selection requires both treated and control members present in the top segment to avoid degenerate uplift estimates.
+  - Outputs prioritize members with highest estimated churn reduction if contacted, aligning outreach with causal impact rather than risk alone.
+
+Selecting n (Outreach Size)
+- Data-driven selection: On validation, evaluate candidate fractions and choose the one with highest estimated uplift in the top segment (`fraction_k`). On test, apply the selected fraction from validation or a configured default (`uplift.k_fraction_eval`).
+- Since budget/cost data isn’t available, we determine n using other factors. We can also plot results for different values of n to see the impact, but in my analysis I used a different set of factors
+- Practical procedure:
+  - Compute validation `gain` across candidate fractions; pick `fraction_k` with max `uplift_hat`
+  - Optionally, compute scenario metrics at alternative fractions (e.g., 10%, 20%, 30%) to assess robustness; the code includes a fixed-fraction evaluation pathway.

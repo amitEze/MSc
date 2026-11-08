@@ -1,0 +1,48 @@
+experiment_name: "uplift_two_model_xgb"
+seed: 42
+
+data:
+  train_base_table: "data/processed/train_table.parquet"
+  test_base_table: "data/processed/test_table.parquet"
+  member_id_col: "member_id"
+  target_col: "y_churn"
+  treatment_col: "t_outreach"
+
+features:
+  drop_cols:
+    - "web_first_visit_ts"
+    - "web_last_visit_ts"
+    - "app_first_session_ts"
+    - "app_last_session_ts"
+    - "claims_first_diag_date"
+    - "claims_last_diag_date"
+    - "web_total_visits_unfiltered"
+  numeric_imputation: "median"
+  scale_numeric: true
+
+model:
+  type: "xgboost"
+  hyperparams:
+    n_estimators: 400
+    max_depth: 3
+    learning_rate: 0.01
+    subsample: 0.8
+    colsample_bytree: 0.8
+    reg_lambda: 5.0
+    n_jobs: -1
+
+  search_grid:
+    max_depth: [3, 5, 7]
+    n_estimators: [100, 400, 800]
+    learning_rate: [0.01, 0.1, 0.3]
+    reg_lambda: [1.0, 3.0, 5.0]
+
+training:
+  val_size: 0.2
+
+uplift:
+  k_fraction_eval: 0.3
+
+outreach_policy:
+  selection_mode: "top_fraction"
+  top_fraction: 0.2

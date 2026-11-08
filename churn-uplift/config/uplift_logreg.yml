@@ -1,0 +1,43 @@
+experiment_name: "uplift_two_model_logreg"
+seed: 42
+
+data:
+  train_base_table: "data/processed/train_table.parquet"
+  test_base_table: "data/processed/test_table.parquet"
+  member_id_col: "member_id"
+  target_col: "y_churn"
+  treatment_col: "t_outreach"
+
+features:
+  drop_cols:
+    - "web_first_visit_ts"
+    - "web_last_visit_ts"
+    - "app_first_session_ts"
+    - "app_last_session_ts"
+    - "claims_first_diag_date"
+    - "claims_last_diag_date"
+    - "web_total_visits_unfiltered"
+  numeric_imputation: "median"
+  scale_numeric: true
+
+model:
+  type: "logistic_regression"
+  hyperparams:
+    max_iter: 2000
+    C: 0.1
+    class_weight: "balanced"
+  
+  search_grid:
+    C: [0.01, 0.1, 1.0, 10.0]
+    max_iter: [100, 200, 500, 1000, 2000]
+    class_weight: ["balanced", null]
+
+training:
+  val_size: 0.2
+
+uplift:
+  k_fraction_eval: 0.25   # evaluate uplift@25% top scored
+
+outreach_policy:
+  selection_mode: "top_fraction"  # currently only this mode
+  top_fraction: 0.2               # recommend outreach to top 20%
